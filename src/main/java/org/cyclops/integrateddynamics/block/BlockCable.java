@@ -67,6 +67,7 @@ import org.cyclops.integrateddynamics.Reference;
 import org.cyclops.integrateddynamics.RegistryEntries;
 import org.cyclops.integrateddynamics.api.block.IDynamicLight;
 import org.cyclops.integrateddynamics.api.block.IDynamicRedstone;
+import org.cyclops.integrateddynamics.api.block.cable.ICableFakeable;
 import org.cyclops.integrateddynamics.api.part.IPartContainer;
 import org.cyclops.integrateddynamics.api.part.IPartState;
 import org.cyclops.integrateddynamics.api.part.IPartType;
@@ -264,8 +265,11 @@ public class BlockCable extends BlockWithEntity implements IDynamicModelElement,
     @Override
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onPlace(state, world, pos, oldState, isMoving);
-        if (!world.isClientSide() && !state.hasBlockEntity()) {
-            CableHelpers.onCableAdded(world, pos);
+        if (!world.isClientSide()) {
+            ICableFakeable cableFakeable = CableHelpers.getCableFakeable(world, pos, null).orElse(null);
+            if (cableFakeable != null && cableFakeable.isRealCable()) {
+                CableHelpers.onCableAdded(world, pos);
+            }
         }
     }
 
