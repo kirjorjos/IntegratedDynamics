@@ -43,7 +43,7 @@ public class VoxelShapeComponentsFactoryHandlerCableCenter implements VoxelShape
     @Override
     public Collection<VoxelShapeComponents.IComponent> createComponents(BlockState blockState, BlockGetter world, BlockPos blockPos, CollisionContext selectionContext) {
         if (world instanceof ILevelExtension level) {
-            if (CableHelpers.isNoFakeCable(level, blockPos, null)) {
+            if (CableHelpers.isNoFakeCable(level, blockPos, null, blockState)) {
                 return Collections.singletonList(COMPONENT);
             }
         }

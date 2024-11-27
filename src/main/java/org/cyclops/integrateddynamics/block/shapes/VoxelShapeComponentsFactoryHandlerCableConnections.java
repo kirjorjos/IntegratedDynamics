@@ -47,11 +47,11 @@ public class VoxelShapeComponentsFactoryHandlerCableConnections implements Voxel
     public Collection<VoxelShapeComponents.IComponent> createComponents(BlockState blockState, BlockGetter world, BlockPos blockPos, CollisionContext selectionContext) {
         Collection<VoxelShapeComponents.IComponent> components = Lists.newArrayList();
         if (world instanceof ILevelExtension level) {
-            if (CableHelpers.isNoFakeCable(level, blockPos, null)) {
+            if (CableHelpers.isNoFakeCable(level, blockPos, null, blockState)) {
                 for (Direction direction : Direction.values()) {
                     IPartContainer partContainer = null;
-                    if (CableHelpers.isCableConnected((Level) world, blockPos, direction) ||
-                            (partContainer = PartHelpers.getPartContainer(level, blockPos, direction).orElse(null)) != null
+                    if (CableHelpers.isCableConnected((Level) world, blockPos, direction, blockState) ||
+                            (partContainer = PartHelpers.getPartContainer(level, blockPos, direction, blockState).orElse(null)) != null
                                     && partContainer.hasPart(direction)) {
                         components.add(new Component(direction, partContainer));
                     }

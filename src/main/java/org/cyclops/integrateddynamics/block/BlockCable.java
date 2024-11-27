@@ -487,7 +487,7 @@ public class BlockCable extends BlockWithEntity implements IDynamicModelElement,
         int light = 0;
         if (world instanceof ILevelExtension levelExtension) {
             for (Direction side : Direction.values()) {
-                IDynamicLight dynamicLight = BlockEntityHelpers.getCapability(levelExtension, pos, side, Capabilities.DynamicLight.BLOCK).orElse(null);
+                IDynamicLight dynamicLight = levelExtension.getCapability(Capabilities.DynamicLight.BLOCK, pos, blockState, null, side);
                 if (dynamicLight != null) {
                     light = Math.max(light, dynamicLight.getLightLevel());
                 }

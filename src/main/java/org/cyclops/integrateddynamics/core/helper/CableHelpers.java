@@ -55,8 +55,21 @@ public class CableHelpers {
      * @param side The side.
      * @return The optional cable capability.
      */
+    @Deprecated // TODO: attempt to migrate all calls to method with BlockState param
     public static Optional<ICable> getCable(ILevelExtension world, BlockPos pos, @Nullable Direction side) {
         return BlockEntityHelpers.getCapability(world, pos, side, Capabilities.Cable.BLOCK);
+    }
+
+    /**
+     * Get the cable capability at the given position.
+     * @param world The world.
+     * @param pos The position.
+     * @param side The side.
+     * @param blockState The block state.
+     * @return The optional cable capability.
+     */
+    public static Optional<ICable> getCable(ILevelExtension world, BlockPos pos, @Nullable Direction side, BlockState blockState) {
+        return Optional.ofNullable(world.getCapability(Capabilities.Cable.BLOCK, pos, blockState, null, side));
     }
 
     /**
@@ -66,8 +79,21 @@ public class CableHelpers {
      * @param side The side.
      * @return The optional fakeable cable capability.
      */
+    @Deprecated // TODO: attempt to migrate all calls to method with BlockState param
     public static Optional<ICableFakeable> getCableFakeable(ILevelExtension world, BlockPos pos, @Nullable Direction side) {
         return BlockEntityHelpers.getCapability(world, pos, side, Capabilities.CableFakeable.BLOCK);
+    }
+
+    /**
+     * Get the fakeable cable capability at the given position.
+     * @param world The world.
+     * @param pos The position.
+     * @param side The side.
+     * @param blockState The block state.
+     * @return The optional fakeable cable capability.
+     */
+    public static Optional<ICableFakeable> getCableFakeable(ILevelExtension world, BlockPos pos, @Nullable Direction side, BlockState blockState) {
+        return Optional.ofNullable(world.getCapability(Capabilities.CableFakeable.BLOCK, pos, blockState, null, side));
     }
 
     /**
@@ -111,8 +137,23 @@ public class CableHelpers {
      * @param side The side to check a connection for.
      * @return If there is a cable that is connected.
      */
+    @Deprecated // TODO: attempt to migrate all calls to method with BlockState param
     public static boolean isCableConnected(ILevelExtension world, BlockPos pos, Direction side) {
         return getCable(world, pos, side)
+                .map(cable -> cable.isConnected(side))
+                .orElse(false);
+    }
+
+    /**
+     * Check if there is a cable at the given position AND if it is connected for the given side.
+     * @param world The world.
+     * @param pos The position.
+     * @param side The side to check a connection for.
+     * @param blockState The block state.
+     * @return If there is a cable that is connected.
+     */
+    public static boolean isCableConnected(ILevelExtension world, BlockPos pos, Direction side, BlockState blockState) {
+        return getCable(world, pos, side, blockState)
                 .map(cable -> cable.isConnected(side))
                 .orElse(false);
     }
@@ -146,8 +187,25 @@ public class CableHelpers {
      * @param side The side.
      * @return If there is no fake cable.
      */
+    @Deprecated // TODO: attempt to migrate all calls to method with BlockState param
     public static boolean isNoFakeCable(ILevelExtension world, BlockPos pos, @Nullable Direction side) {
         return getCableFakeable(world, pos, side)
+                .map(ICableFakeable::isRealCable)
+                .orElse(true);
+    }
+
+    /**
+     * Check if the given position is not a fake cable.
+     * This can mean that there is no cable at all!
+     * But if there is a cable, this method will return true only if it is a real cable.
+     * @param world The world.
+     * @param pos The position.
+     * @param side The side.
+     * @param blockState The block state.
+     * @return If there is no fake cable.
+     */
+    public static boolean isNoFakeCable(ILevelExtension world, BlockPos pos, @Nullable Direction side, BlockState blockState) {
+        return getCableFakeable(world, pos, side, blockState)
                 .map(ICableFakeable::isRealCable)
                 .orElse(true);
     }
@@ -378,8 +436,22 @@ public class CableHelpers {
      * @param pos The position.
      * @return If it has a facade.
      */
+    @Deprecated // TODO: attempt to migrate all calls to method with BlockState param
     public static boolean hasFacade(ILevelExtension world, BlockPos pos) {
         return BlockEntityHelpers.getCapability(world, pos, null, Capabilities.Facadeable.BLOCK)
+                .map(IFacadeable::hasFacade)
+                .orElse(false);
+    }
+
+    /**
+     * Check if the target has a facade.
+     * @param world The world.
+     * @param pos The position.
+     * @param blockState The block state.
+     * @return If it has a facade.
+     */
+    public static boolean hasFacade(ILevelExtension world, BlockPos pos, BlockState blockState) {
+        return Optional.ofNullable(world.getCapability(Capabilities.Facadeable.BLOCK, pos, blockState, null, null))
                 .map(IFacadeable::hasFacade)
                 .orElse(false);
     }
@@ -390,6 +462,7 @@ public class CableHelpers {
      * @param pos The position.
      * @return The optional facade.
      */
+    @Deprecated // TODO: attempt to migrate all calls to method with BlockState param
     public static Optional<BlockState> getFacade(ILevelExtension world, BlockPos pos) {
         return BlockEntityHelpers.getCapability(world, pos, null, Capabilities.Facadeable.BLOCK)
                 .flatMap(facadeable -> Optional.ofNullable(facadeable.getFacade()));
@@ -407,6 +480,7 @@ public class CableHelpers {
                 .flatMap(facadeable -> Optional.ofNullable(facadeable.getFacade()));
     }
 
+    @Deprecated // TODO: attempt to migrate all calls to method with BlockState param
     public static boolean isLightTransparent(Level world, BlockPos pos, @Nullable Direction side) {
         return PartHelpers.getPartContainer(world, pos, side)
                 .map(partContainer -> {

@@ -43,7 +43,7 @@ public class VoxelShapeComponentsFactoryHandlerParts implements VoxelShapeCompon
         Collection<VoxelShapeComponents.IComponent> components = Lists.newArrayList();
         if (world instanceof ILevelExtension level) {
             for (Direction direction : Direction.values()) {
-                IPartContainer partContainer = PartHelpers.getPartContainer(level, blockPos, direction).orElse(null);
+                IPartContainer partContainer = PartHelpers.getPartContainer(level, blockPos, direction, blockState).orElse(null);
                 if (partContainer != null && partContainer.hasPart(direction)) {
                     components.add(new Component(direction, partContainer));
                 }
