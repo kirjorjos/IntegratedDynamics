@@ -44,8 +44,21 @@ public class NetworkHelpers {
      * @param side The side.
      * @return The optional network carrier capability.
      */
+    @Deprecated // TODO: rm in favor of variant of BlockState param
     public static Optional<INetworkCarrier> getNetworkCarrier(ILevelExtension world, BlockPos pos, @Nullable Direction side) {
         return BlockEntityHelpers.getCapability(world, pos, side, Capabilities.NetworkCarrier.BLOCK);
+    }
+
+    /**
+     * Get the network carrier capability at the given position.
+     * @param world The world.
+     * @param pos The position.
+     * @param side The side.
+     * @param blockState The block state.
+     * @return The optional network carrier capability.
+     */
+    public static Optional<INetworkCarrier> getNetworkCarrier(ILevelExtension world, BlockPos pos, @Nullable Direction side, BlockState blockState) {
+        return Optional.ofNullable(world.getCapability(Capabilities.NetworkCarrier.BLOCK, pos, blockState, null, side));
     }
 
     /**
@@ -55,8 +68,21 @@ public class NetworkHelpers {
      * @param side The side.
      * @return The optional network element provider capability.
      */
+    @Deprecated // TODO: rm in favor of variant of BlockState param
     public static Optional<INetworkElementProvider> getNetworkElementProvider(ILevelExtension world, BlockPos pos, @Nullable Direction side) {
         return BlockEntityHelpers.getCapability(world, pos, side, Capabilities.NetworkElementProvider.BLOCK);
+    }
+
+    /**
+     * Get the network element provider capability at the given position.
+     * @param world The world.
+     * @param pos The position.
+     * @param side The side.
+     * @param blockState The block state.
+     * @return The optional network element provider capability.
+     */
+    public static Optional<INetworkElementProvider> getNetworkElementProvider(ILevelExtension world, BlockPos pos, @Nullable Direction side, BlockState blockState) {
+        return Optional.ofNullable(world.getCapability(Capabilities.NetworkElementProvider.BLOCK, pos, blockState, null, side));
     }
 
     /**

@@ -1,6 +1,7 @@
 package org.cyclops.integrateddynamics.api.network;
 
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
 import org.cyclops.integrateddynamics.api.path.IPathElement;
 
 /**
@@ -28,9 +29,11 @@ public interface IFullNetworkListener {
     /**
      * Remove a given network element from the network.
      * Also removed its tickable instance.
-     * @param element The network element.
+     *
+     * @param element    The network element.
+     * @param blockState
      */
-    public void removeNetworkElementPost(INetworkElement element);
+    public void removeNetworkElementPost(INetworkElement element, BlockState blockState);
 
     /**
      * Terminate the network elements for this network.
@@ -52,9 +55,10 @@ public interface IFullNetworkListener {
      * If the path element had any network elements registered in the network, these will be killed and removed as well.
      * @param pathElement The path element.
      * @param side The side.
+     * @param state The block state container.
      * @return If the path element was removed.
      */
-    public boolean removePathElement(IPathElement pathElement, Direction side);
+    public boolean removePathElement(IPathElement pathElement, Direction side, BlockState state);
 
     /**
      * Called when the server loaded this network.

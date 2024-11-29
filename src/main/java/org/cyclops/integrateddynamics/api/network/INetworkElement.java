@@ -42,7 +42,17 @@ public interface INetworkElement extends Comparable<INetworkElement> {
      * Called right before the network is terminated or will be reset.
      * @param network The network to update in.
      */
+    @Deprecated // TODO: try to rm in next major
     public void beforeNetworkKill(INetwork network);
+
+    /**
+     * Called right before the network is terminated or will be reset.
+     * @param network The network to update in.
+     * @param blockState The block state.
+     */
+    public default void beforeNetworkKill(INetwork network, BlockState blockState) {
+        beforeNetworkKill(network);
+    }
 
     /**
      * Called right after this network is initialized.
@@ -63,7 +73,19 @@ public interface INetworkElement extends Comparable<INetworkElement> {
      * @param dropMainElement If the part itself should also be dropped.
      * @param saveState If the element state should be saved in the item.
      */
+    @Deprecated // TODO: try to rm in next major
     public void addDrops(List<ItemStack> itemStacks, boolean dropMainElement, boolean saveState);
+
+    /**
+     * Add the itemstacks to drop when this element is removed.
+     * @param blockState The block state of the container block.
+     * @param itemStacks The itemstack list to add to.
+     * @param dropMainElement If the part itself should also be dropped.
+     * @param saveState If the element state should be saved in the item.
+     */
+    public default void addDrops(BlockState blockState, List<ItemStack> itemStacks, boolean dropMainElement, boolean saveState) {
+        this.addDrops(itemStacks, dropMainElement, saveState);
+    }
 
     /**
      * Called when this element is added to the network.
@@ -76,7 +98,17 @@ public interface INetworkElement extends Comparable<INetworkElement> {
      * Called when this element is removed from the network.
      * @param network The network.
      */
+    @Deprecated // TODO: try to rm in next major
     public void onNetworkRemoval(INetwork network);
+
+    /**
+     * Called when this element is removed from the network.
+     * @param network The network.
+     * @param blockState The block state.
+     */
+    public default void onNetworkRemoval(INetwork network, BlockState blockState) {
+        onNetworkRemoval(network);
+    }
 
     /**
      * Called when this element is about to be removed.
@@ -87,7 +119,7 @@ public interface INetworkElement extends Comparable<INetworkElement> {
 
     /**
      * Called when this element has been removed.
-     * This is called after {@link INetwork#removeNetworkElementPost(INetworkElement)}.
+     * This is called after {@link IFullNetworkListener#removeNetworkElementPost(INetworkElement, BlockState)}.
      * @param network The network.
      */
     public void onPostRemoved(INetwork network);

@@ -215,7 +215,7 @@ public class BlockCable extends BlockWithEntity implements IDynamicModelElement,
     @Override
     public void onBlockExploded(BlockState state, Level world, BlockPos blockPos, Explosion explosion) {
         CableHelpers.setRemovingCable(true);
-        CableHelpers.onCableRemoving(world, blockPos, true, false);
+        CableHelpers.onCableRemoving(world, blockPos, true, false, state);
         Collection<Direction> connectedCables = CableHelpers.getExternallyConnectedCables(world, blockPos);
         super.onBlockExploded(state, world, blockPos, explosion);
         CableHelpers.onCableRemoved(world, blockPos, connectedCables);
@@ -237,7 +237,7 @@ public class BlockCable extends BlockWithEntity implements IDynamicModelElement,
         if (newState.getBlock() != this) {
             Collection<Direction> connectedCables = null;
             if (!CableHelpers.isRemovingCable()) {
-                CableHelpers.onCableRemoving(world, blockPos, false, false);
+                CableHelpers.onCableRemoving(world, blockPos, false, false, state);
                 connectedCables = CableHelpers.getExternallyConnectedCables(world, blockPos);
             }
             super.onRemove(state, world, blockPos, newState, isMoving);

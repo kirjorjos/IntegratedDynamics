@@ -115,6 +115,13 @@ public interface INetwork extends IFullNetworkListener, INBTSerializable {
     public void revalidateElement(INetworkElement element);
 
     /**
+     * If the network element has not been invalidated.
+     * @param element A network element.
+     * @return If it is valid.
+     */
+    public boolean isValid(INetworkElement element);
+
+    /**
      * @param sidedPathElement A sided path element.
      * @return If this network contains the given sided path element.
      */

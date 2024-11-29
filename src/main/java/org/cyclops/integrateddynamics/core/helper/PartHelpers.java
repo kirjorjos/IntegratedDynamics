@@ -31,11 +31,7 @@ import org.cyclops.integrateddynamics.api.block.cable.ICableFakeable;
 import org.cyclops.integrateddynamics.api.evaluate.variable.ValueDeseralizationContext;
 import org.cyclops.integrateddynamics.api.network.INetwork;
 import org.cyclops.integrateddynamics.api.network.INetworkElement;
-import org.cyclops.integrateddynamics.api.part.IPartContainer;
-import org.cyclops.integrateddynamics.api.part.IPartState;
-import org.cyclops.integrateddynamics.api.part.IPartType;
-import org.cyclops.integrateddynamics.api.part.PartPos;
-import org.cyclops.integrateddynamics.api.part.PartTarget;
+import org.cyclops.integrateddynamics.api.part.*;
 import org.cyclops.integrateddynamics.api.part.aspect.IAspect;
 import org.cyclops.integrateddynamics.core.network.event.UnknownPartEvent;
 import org.cyclops.integrateddynamics.core.part.PartTypeBase;
@@ -60,6 +56,7 @@ public class PartHelpers {
      * @param side The side.
      * @return The optional part container capability.
      */
+    @Deprecated // TODO: rm in favor of variant of BlockState param
     public static Optional<IPartContainer> getPartContainer(ILevelExtension world, BlockPos pos, @Nullable Direction side) {
         return BlockEntityHelpers.getCapability(world, pos, side, Capabilities.PartContainer.BLOCK);
     }
@@ -82,8 +79,24 @@ public class PartHelpers {
      * @param side The side.
      * @return The optional part container capability.
      */
+    @Deprecated // TODO: rm in favor of variant of BlockState param
     public static Optional<IPartContainer> getPartContainer(DimPos dimPos, @Nullable Direction side) {
         return BlockEntityHelpers.getCapability(dimPos, side, Capabilities.PartContainer.BLOCK);
+    }
+
+    /**
+     * Get the part container capability at the given position.
+     * @param dimPos The dimensional position.
+     * @param side The side.
+     * @param blockState The block state.
+     * @return The optional part container capability.
+     */
+    public static Optional<IPartContainer> getPartContainer(DimPos dimPos, @Nullable Direction side, BlockState blockState) {
+        Level level = dimPos.getLevel(true);
+        if (level == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(level.getCapability(Capabilities.PartContainer.BLOCK, dimPos.getBlockPos(), blockState, null, side));
     }
 
     /**
@@ -115,6 +128,22 @@ public class PartHelpers {
     public static IPartContainer getPartContainerChecked(DimPos dimPos, @Nullable Direction side) {
        return PartHelpers.getPartContainer(dimPos, side)
                .orElseThrow(() -> new PartStateException(dimPos, side));
+    }
+
+    /**
+     * Get the part container capability at the given position.
+     * If it is not present, then an illegal state exception will be thrown.
+     *
+     * This should only be called if you know for certain that there will be a part container present.
+     *
+     * @param dimPos The dimensional position.
+     * @param side The side.
+     * @param blockState The block state.
+     * @return The part container capability.
+     */
+    public static IPartContainer getPartContainerChecked(DimPos dimPos, @Nullable Direction side, BlockState blockState) {
+        return PartHelpers.getPartContainer(dimPos, side, blockState)
+                .orElseThrow(() -> new PartStateException(dimPos, side));
     }
 
     /**

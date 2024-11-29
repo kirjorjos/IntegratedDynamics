@@ -56,7 +56,7 @@ public class NetworkDiagnostics {
     public void sendNetworkUpdateToPlayer(ServerPlayer player, INetwork network) {
         List<RawPartData> rawParts = Lists.newArrayList();
         for (INetworkElement networkElement : network.getElements()) {
-            if (networkElement instanceof IPartNetworkElement) {
+            if (network.isValid(networkElement) && networkElement instanceof IPartNetworkElement) {
                 IPartNetworkElement partNetworkElement = (IPartNetworkElement) networkElement;
                 PartPos pos = partNetworkElement.getTarget().getCenter();
                 long lastSecondDurationNs = network.getLastSecondDuration(networkElement);

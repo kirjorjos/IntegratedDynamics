@@ -10,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import org.cyclops.cyclopscore.datastructure.DimPos;
@@ -144,7 +145,7 @@ public class Network implements INetwork {
                     // and set the new network to this.
                     INetwork network = networkCarrier.getNetwork();
                     if (network != null) {
-                        network.removePathElement(sidedPathElement.getPathElement(), side);
+                        network.removePathElement(sidedPathElement.getPathElement(), side, world.getBlockState(pos));
                     }
                     networkCarrier.setNetwork(null);
                     networkCarrier.setNetwork(this);
@@ -279,9 +280,9 @@ public class Network implements INetwork {
     }
 
     @Override
-    public void removeNetworkElementPost(INetworkElement element) {
+    public void removeNetworkElementPost(INetworkElement element, BlockState blockState) {
         for (IFullNetworkListener fullNetworkListener : this.fullNetworkListeners) {
-            fullNetworkListener.removeNetworkElementPost(element);
+            fullNetworkListener.removeNetworkElementPost(element, blockState);
         }
         if (element instanceof IEventListenableNetworkElement) {
             IEventListenableNetworkElement<?> listenableElement = (IEventListenableNetworkElement<?>) element;
@@ -291,8 +292,8 @@ public class Network implements INetwork {
                 }
             });
         }
-        element.beforeNetworkKill(this);
-        element.onNetworkRemoval(this);
+        element.beforeNetworkKill(this, blockState);
+        element.onNetworkRemoval(this, blockState);
         elements.remove(element);
         removeNetworkElementUpdateable(element);
         invalidatedElements.remove(element); // The element may be invalidated (like in an unloaded chunk) when it is being removed.
@@ -439,16 +440,19 @@ public class Network implements INetwork {
     }
 
     @Override
-    public synchronized boolean removePathElement(IPathElement pathElement, Direction side) {
+    public synchronized boolean removePathElement(IPathElement pathElement, Direction side, BlockState blockState) {
         for (IFullNetworkListener fullNetworkListener : this.fullNetworkListeners) {
-            if (!fullNetworkListener.removePathElement(pathElement, side)) {
+            if (!fullNetworkListener.removePathElement(pathElement, side, blockState)) {
                 return false;
             }
         }
         if(baseCluster.remove(SidedPathElement.of(pathElement, null))) {
             DimPos position = pathElement.getPosition();
-            INetworkElementProvider networkElementProvider = BlockEntityHelpers.getCapability(
-                    position, side, Capabilities.NetworkElementProvider.BLOCK).orElse(null);
+            Level level = position.getLevel(true);
+            INetworkElementProvider networkElementProvider = null;
+            if (level != null) {
+                networkElementProvider = level.getCapability(Capabilities.NetworkElementProvider.BLOCK, position.getBlockPos(), blockState, null, side);
+            }
             if (networkElementProvider != null) {
                 Collection<INetworkElement> networkElements = networkElementProvider.
                         createNetworkElements(position.getLevel(true), position.getBlockPos());
@@ -458,7 +462,7 @@ public class Network implements INetwork {
                     }
                 }
                 for (INetworkElement networkElement : networkElements) {
-                    removeNetworkElementPost(networkElement);
+                    removeNetworkElementPost(networkElement, blockState);
                 }
                 onNetworkChanged();
                 return true;
@@ -567,7 +571,8 @@ public class Network implements INetwork {
         return this.fullNetworkListeners;
     }
 
-    protected boolean isValid(INetworkElement element) {
+    @Override
+    public boolean isValid(INetworkElement element) {
         if (invalidatedElements.contains(element)) {
             if (element.canRevalidate(this)) {
                 element.revalidate(this);

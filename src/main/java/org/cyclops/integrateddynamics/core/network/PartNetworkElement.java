@@ -7,6 +7,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import java.util.Optional;
+
+import net.minecraft.world.level.block.state.BlockState;
 import org.cyclops.cyclopscore.datastructure.DimPos;
 import org.cyclops.integrateddynamics.api.PartStateException;
 import org.cyclops.integrateddynamics.api.network.IEnergyConsumingNetworkElement;
@@ -88,6 +90,10 @@ public class PartNetworkElement<P extends IPartType<P, S>, S extends IPartState<
         return PartHelpers.getPartContainerChecked(this.center.getPos(), this.center.getSide());
     }
 
+    public IPartContainer getPartContainer(BlockState blockState) {
+        return PartHelpers.getPartContainerChecked(this.center.getPos(), this.center.getSide(), blockState);
+    }
+
     public Optional<IPartContainer> getPartContainerOptional() {
         return PartHelpers.getPartContainer(this.center.getPos(), this.center.getSide());
     }
@@ -143,6 +149,15 @@ public class PartNetworkElement<P extends IPartType<P, S>, S extends IPartState<
         }
     }
 
+    public S getPartState(BlockState blockState) throws PartStateException {
+        IPartContainer partContainer = getPartContainer(blockState);
+        if(partContainer != null) {
+            return (S) partContainer.getPartState(this.center.getSide());
+        } else {
+            throw new PartStateException(this.center.getPos(), this.center.getSide());
+        }
+    }
+
     @Override
     public int getConsumptionRate() {
         return getPart().getConsumptionRate(getPartState());
@@ -174,6 +189,12 @@ public class PartNetworkElement<P extends IPartType<P, S>, S extends IPartState<
     }
 
     @Override
+    public void beforeNetworkKill(INetwork network, BlockState blockState) {
+        S partState = getPartState(blockState);
+        part.beforeNetworkKill(network, NetworkHelpers.getPartNetworkChecked(network), getTarget(partState), partState);
+    }
+
+    @Override
     public void afterNetworkAlive(INetwork network) {
         part.afterNetworkAlive(network, NetworkHelpers.getPartNetworkChecked(network), getTarget(), getPartState());
     }
@@ -186,6 +207,12 @@ public class PartNetworkElement<P extends IPartType<P, S>, S extends IPartState<
     @Override
     public void addDrops(List<ItemStack> itemStacks, boolean dropMainElement, boolean saveState) {
         part.addDrops(getTarget(), getPartState(), itemStacks, dropMainElement, saveState);
+    }
+
+    @Override
+    public void addDrops(BlockState blockState, List<ItemStack> itemStacks, boolean dropMainElement, boolean saveState) {
+        S partState = getPartState(blockState);
+        part.addDrops(getTarget(partState), partState, itemStacks, dropMainElement, saveState);
     }
 
     @Override
@@ -203,6 +230,14 @@ public class PartNetworkElement<P extends IPartType<P, S>, S extends IPartState<
         IPartNetwork partNetwork = NetworkHelpers.getPartNetworkChecked(network);
         partNetwork.removePart(getPartState().getId());
         part.onNetworkRemoval(network, partNetwork, getTarget(), getPartState());
+    }
+
+    @Override
+    public void onNetworkRemoval(INetwork network, BlockState blockState) {
+        IPartNetwork partNetwork = NetworkHelpers.getPartNetworkChecked(network);
+        S partState = getPartState(blockState);
+        partNetwork.removePart(partState.getId());
+        part.onNetworkRemoval(network, partNetwork, getTarget(partState), partState);
     }
 
     @Override

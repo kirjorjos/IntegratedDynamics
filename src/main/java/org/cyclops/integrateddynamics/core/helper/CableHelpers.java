@@ -68,7 +68,7 @@ public class CableHelpers {
      * @param blockState The block state.
      * @return The optional cable capability.
      */
-    public static Optional<ICable> getCable(ILevelExtension world, BlockPos pos, @Nullable Direction side, BlockState blockState) {
+    public static Optional<ICable> getCable(ILevelExtension world, BlockPos pos, @Nullable Direction side, @Nullable BlockState blockState) {
         return Optional.ofNullable(world.getCapability(Capabilities.Cable.BLOCK, pos, blockState, null, side));
     }
 
@@ -103,8 +103,20 @@ public class CableHelpers {
      * @param side The side.
      * @return The optional path element capability.
      */
+    @Deprecated // TODO: attempt to migrate all calls to method with BlockState param
     public static Optional<IPathElement> getPathElement(ILevelExtension world, BlockPos pos, @Nullable Direction side) {
         return BlockEntityHelpers.getCapability(world, pos, side, Capabilities.PathElement.BLOCK);
+    }
+
+    /**
+     * Get the path element capability at the given position.
+     * @param world The world.
+     * @param pos The position.
+     * @param side The side.
+     * @return The optional path element capability.
+     */
+    public static Optional<IPathElement> getPathElement(ILevelExtension world, BlockPos pos, @Nullable Direction side, BlockState blockState) {
+        return Optional.ofNullable(world.getCapability(Capabilities.PathElement.BLOCK, pos, blockState, null, side));
     }
 
     /**
@@ -328,16 +340,16 @@ public class CableHelpers {
      * @param saveState If the element state should be saved in the item.
      * @return If the cable was removed from the network.
      */
-    public static boolean onCableRemoving(Level world, BlockPos pos, boolean dropMainElement, boolean saveState) {
+    public static boolean onCableRemoving(Level world, BlockPos pos, boolean dropMainElement, boolean saveState, BlockState blockState) {
         if (!world.isClientSide() && CableHelpers.isNoFakeCable(world, pos, null)) {
-            INetworkCarrier networkCarrier = NetworkHelpers.getNetworkCarrier(world, pos, null).orElse(null);
+            INetworkCarrier networkCarrier = NetworkHelpers.getNetworkCarrier(world, pos, null, blockState).orElse(null);
 
             // Get all drops from the network elements this cable provides.
             List<ItemStack> itemStacks = Lists.newLinkedList();
-            INetworkElementProvider networkElementProvider = NetworkHelpers.getNetworkElementProvider(world, pos, null).orElse(null);
+            INetworkElementProvider networkElementProvider = NetworkHelpers.getNetworkElementProvider(world, pos, null, blockState).orElse(null);
             if (networkElementProvider != null) {
                 for (INetworkElement networkElement : networkElementProvider.createNetworkElements(world, pos)) {
-                    networkElement.addDrops(itemStacks, dropMainElement, saveState);
+                    networkElement.addDrops(blockState, itemStacks, dropMainElement, saveState);
                 }
                 for (ItemStack itemStack : itemStacks) {
                     Block.popResource(world, pos, itemStack);
@@ -346,11 +358,11 @@ public class CableHelpers {
 
             // If the cable has a network, remove it from the network.
             if(networkCarrier != null && networkCarrier.getNetwork() != null) {
-                IPathElement pathElement = getPathElement(world, pos, null)
+                IPathElement pathElement = getPathElement(world, pos, null, blockState)
                         .orElseThrow(() -> new IllegalStateException("Could not find a valid path element capability"));
                 INetwork network = networkCarrier.getNetwork();
                 networkCarrier.setNetwork(null);
-                return network.removePathElement(pathElement, null);
+                return network.removePathElement(pathElement, null, blockState);
             }
         }
         return true;
@@ -410,7 +422,7 @@ public class CableHelpers {
         }
 
         Collection<Direction> connectedCables = getCableConnections(cable);
-        CableHelpers.onCableRemoving(world, pos, false, false);
+        CableHelpers.onCableRemoving(world, pos, false, false, blockState);
         // If the cable has no parts or is not fakeable, remove the block,
         // otherwise mark the cable as being fake.
         if (cableFakeable == null || partContainer == null || !partContainer.hasParts()) {
@@ -533,7 +545,7 @@ public class CableHelpers {
     public static Collection<Direction> getExternallyConnectedCables(Level world, BlockPos pos) {
         Collection<Direction> sides = Sets.newIdentityHashSet();
         for (Direction side : Direction.values()) {
-            if (CableHelpers.isCableConnected(world, pos.relative(side), side.getOpposite())) {
+            if (CableHelpers.isCableConnected(world, pos.relative(side), side.getOpposite(), null)) {
                 sides.add(side);
             }
         }

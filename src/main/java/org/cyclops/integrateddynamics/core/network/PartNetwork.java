@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
 import org.cyclops.cyclopscore.datastructure.CompositeMap;
 import org.cyclops.cyclopscore.datastructure.DimPos;
 import org.cyclops.cyclopscore.helper.BlockEntityHelpers;
@@ -226,7 +227,7 @@ public class PartNetwork extends FullNetworkListenerAdapter implements IPartNetw
     }
 
     @Override
-    public boolean removePathElement(IPathElement pathElement, Direction side) {
+    public boolean removePathElement(IPathElement pathElement, Direction side, BlockState blockState) {
         notifyPartsChanged();
         return true;
     }
