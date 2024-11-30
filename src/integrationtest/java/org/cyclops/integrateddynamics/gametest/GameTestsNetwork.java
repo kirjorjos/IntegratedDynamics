@@ -1,5 +1,6 @@
 package org.cyclops.integrateddynamics.gametest;
 
+import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -15,7 +16,10 @@ import org.cyclops.cyclopscore.client.particle.ParticleBlurData;
 import org.cyclops.integrateddynamics.Reference;
 import org.cyclops.integrateddynamics.RegistryEntries;
 import org.cyclops.integrateddynamics.api.network.INetwork;
+import org.cyclops.integrateddynamics.core.helper.CableHelpers;
 import org.cyclops.integrateddynamics.core.helper.NetworkHelpers;
+
+import java.util.Optional;
 
 @GameTestHolder(Reference.MOD_ID)
 @PrefixGameTestTemplate(false)
@@ -40,6 +44,27 @@ public class GameTestsNetwork {
             helper.assertTrue(network1 == network2, "Networks of connected cables are not equal");
             helper.assertTrue(network2 == network3, "Networks of connected cables are not equal");
             helper.assertTrue(network3 == network4, "Networks of connected cables are not equal");
+
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS)),
+                    Sets.newHashSet(Direction.EAST, Direction.SOUTH),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.south())),
+                    Sets.newHashSet(Direction.EAST, Direction.NORTH),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.east())),
+                    Sets.newHashSet(Direction.WEST, Direction.SOUTH),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.south().east())),
+                    Sets.newHashSet(Direction.WEST, Direction.NORTH),
+                    "Connected cables are invalid"
+            );
         });
     }
 
@@ -63,6 +88,27 @@ public class GameTestsNetwork {
             helper.assertTrue(network1 == network2, "Networks of connected cables are not equal");
             helper.assertTrue(network2 == network3, "Networks of connected cables are not equal");
             helper.assertTrue(network3 == network4, "Networks of connected cables are not equal");
+
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS)),
+                    Sets.newHashSet(Direction.EAST, Direction.SOUTH),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.south())),
+                    Sets.newHashSet(Direction.EAST, Direction.NORTH),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.east())),
+                    Sets.newHashSet(Direction.WEST, Direction.SOUTH),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.south().east())),
+                    Sets.newHashSet(Direction.WEST, Direction.NORTH),
+                    "Connected cables are invalid"
+            );
         });
     }
 
@@ -82,6 +128,28 @@ public class GameTestsNetwork {
             helper.assertTrue(network1 == network2, "Networks of connected cables are not equal");
             helper.assertTrue(network2 != network3, "Networks of disconnected cables are equal");
             helper.assertTrue(network3 == network4, "Networks of connected cables are not equal");
+
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS)),
+                    Sets.newHashSet(Direction.EAST),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(1, 0, 0))),
+                    Sets.newHashSet(Direction.WEST),
+                    "Connected cables are invalid"
+            );
+
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(3, 0, 0))),
+                    Sets.newHashSet(Direction.EAST),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(4, 0, 0))),
+                    Sets.newHashSet(Direction.WEST),
+                    "Connected cables are invalid"
+            );
         });
     }
 
@@ -114,6 +182,28 @@ public class GameTestsNetwork {
             helper.assertTrue(network1 == network2, "Networks of connected cables are not equal");
             helper.assertTrue(network2 != network3, "Networks of wrench-disconnected cables are equal");
             helper.assertTrue(network3 == network4, "Networks of connected cables are not equal");
+
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS)),
+                    Sets.newHashSet(Direction.EAST),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(1, 0, 0))),
+                    Sets.newHashSet(Direction.WEST),
+                    "Connected cables are invalid"
+            );
+
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(2, 0, 0))),
+                    Sets.newHashSet(Direction.EAST),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(3, 0, 0))),
+                    Sets.newHashSet(Direction.WEST),
+                    "Connected cables are invalid"
+            );
         });
     }
 
@@ -158,6 +248,130 @@ public class GameTestsNetwork {
             helper.assertTrue(network1 == network2, "Networks of connected cables are not equal");
             helper.assertTrue(network2 == network3, "Networks of wrench-reconnected cables are equal");
             helper.assertTrue(network3 == network4, "Networks of connected cables are not equal");
+
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS)),
+                    Sets.newHashSet(Direction.EAST),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(1, 0, 0))),
+                    Sets.newHashSet(Direction.WEST, Direction.EAST),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(2, 0, 0))),
+                    Sets.newHashSet(Direction.WEST, Direction.EAST),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(3, 0, 0))),
+                    Sets.newHashSet(Direction.WEST),
+                    "Connected cables are invalid"
+            );
+        });
+    }
+
+    @GameTest(template = TEMPLATE_EMPTY)
+    public void testNetworkTwoRemoved(GameTestHelper helper) {
+        // Place two networks directly next to each other
+        helper.setBlock(POS, RegistryEntries.BLOCK_CABLE.value());
+        helper.setBlock(POS.offset(1, 0, 0), RegistryEntries.BLOCK_CABLE.value());
+        helper.setBlock(POS.offset(2, 0, 0), RegistryEntries.BLOCK_CABLE.value());
+        helper.setBlock(POS.offset(3, 0, 0), RegistryEntries.BLOCK_CABLE.value());
+
+        // And remove one cable
+        helper.destroyBlock(POS.offset(1, 0, 0));
+
+        helper.succeedWhen(() -> {
+            INetwork network1 = NetworkHelpers.getNetworkChecked(helper.getLevel(), helper.absolutePos(POS), null);
+            Optional<INetwork> network2 = NetworkHelpers.getNetwork(helper.getLevel(), helper.absolutePos(POS.offset(1, 0, 0)), null);
+            INetwork network3 = NetworkHelpers.getNetworkChecked(helper.getLevel(), helper.absolutePos(POS.offset(2, 0, 0)), null);
+            INetwork network4 = NetworkHelpers.getNetworkChecked(helper.getLevel(), helper.absolutePos(POS.offset(3, 0, 0)), null);
+            helper.assertTrue(network1 != network3, "Networks of connected cables are not equal");
+            helper.assertTrue(network2.isEmpty(), "Network of removed cable is not empty");
+            helper.assertTrue(network3 == network4, "Networks of connected cables are not equal");
+
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS)),
+                    Sets.newHashSet(),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(1, 0, 0))),
+                    Sets.newHashSet(),
+                    "Connected cables are invalid"
+            );
+
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(2, 0, 0))),
+                    Sets.newHashSet(Direction.EAST),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(3, 0, 0))),
+                    Sets.newHashSet(Direction.WEST),
+                    "Connected cables are invalid"
+            );
+
+            helper.assertItemEntityNotPresent(RegistryEntries.ITEM_CABLE.get());
+        });
+    }
+
+    @GameTest(template = TEMPLATE_EMPTY)
+    public void testNetworkTwoRemovedByWrench(GameTestHelper helper) {
+        // Place two networks directly next to each other
+        helper.setBlock(POS, RegistryEntries.BLOCK_CABLE.value());
+        helper.setBlock(POS.offset(1, 0, 0), RegistryEntries.BLOCK_CABLE.value());
+        helper.setBlock(POS.offset(2, 0, 0), RegistryEntries.BLOCK_CABLE.value());
+        helper.setBlock(POS.offset(3, 0, 0), RegistryEntries.BLOCK_CABLE.value());
+
+        // And remove one cable using the wrench
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.setShiftKeyDown(true); // To remove cable!
+        ItemStack itemStack = new ItemStack(RegistryEntries.ITEM_WRENCH.value());
+        player.setItemInHand(InteractionHand.MAIN_HAND, itemStack);
+        player.setPos(helper.absolutePos(POS.offset(1, 0, 0)).getCenter().add(0.25, -1.5, -0.5));
+        helper.getBlockState(POS.offset(1, 0, 0)).useWithoutItem(helper.getLevel(), player,
+                new BlockHitResult(
+                        helper.absolutePos(POS.offset(1, 0, 0)).getCenter(),
+                        Direction.NORTH,
+                        helper.absolutePos(POS.offset(1, 0, 0)),
+                        false)
+        );
+
+        helper.succeedWhen(() -> {
+            INetwork network1 = NetworkHelpers.getNetworkChecked(helper.getLevel(), helper.absolutePos(POS), null);
+            Optional<INetwork> network2 = NetworkHelpers.getNetwork(helper.getLevel(), helper.absolutePos(POS.offset(1, 0, 0)), null);
+            INetwork network3 = NetworkHelpers.getNetworkChecked(helper.getLevel(), helper.absolutePos(POS.offset(2, 0, 0)), null);
+            INetwork network4 = NetworkHelpers.getNetworkChecked(helper.getLevel(), helper.absolutePos(POS.offset(3, 0, 0)), null);
+            helper.assertTrue(network1 != network3, "Networks of connected cables are not equal");
+            helper.assertTrue(network2.isEmpty(), "Network of removed cable is not empty");
+            helper.assertTrue(network3 == network4, "Networks of connected cables are not equal");
+
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS)),
+                    Sets.newHashSet(),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(1, 0, 0))),
+                    Sets.newHashSet(),
+                    "Connected cables are invalid"
+            );
+
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(2, 0, 0))),
+                    Sets.newHashSet(Direction.EAST),
+                    "Connected cables are invalid"
+            );
+            helper.assertValueEqual(
+                    CableHelpers.getExternallyConnectedCables(helper.getLevel(), helper.absolutePos(POS.offset(3, 0, 0))),
+                    Sets.newHashSet(Direction.WEST),
+                    "Connected cables are invalid"
+            );
+
+            helper.assertItemEntityNotPresent(RegistryEntries.ITEM_CABLE.get());
         });
     }
 
