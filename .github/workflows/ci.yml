@@ -58,9 +58,7 @@ jobs:
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         if: ${{ env.COVERALLS_REPO_TOKEN }}
-        run: ./gradlew test jacocoTestReport coveralls
-      - name: 'Game Test'
-        run: ./gradlew runGameTestServer
+        run: ./gradlew test runGameTestServer jacocoTestReport coveralls
       - name: 'Deploy as GitHub CI artifacts'
         uses: actions/upload-artifact@v4
         with:
