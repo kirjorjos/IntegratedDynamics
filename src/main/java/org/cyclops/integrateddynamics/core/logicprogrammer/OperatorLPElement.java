@@ -188,7 +188,7 @@ public class OperatorLPElement implements ILogicProgrammerElement<RenderPattern,
         return new OperatorLPElementRenderPattern(this, baseX, baseY, maxWidth, maxHeight, gui, container);
     }
 
-    protected static class OperatorVariableFacadeFactory implements IVariableFacadeHandlerRegistry.IVariableFacadeFactory<IOperatorVariableFacade> {
+    public static class OperatorVariableFacadeFactory implements IVariableFacadeHandlerRegistry.IVariableFacadeFactory<IOperatorVariableFacade> {
 
         private final IOperator operator;
         private final int[] variableIds;
