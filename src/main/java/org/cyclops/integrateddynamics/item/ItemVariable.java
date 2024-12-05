@@ -30,7 +30,6 @@ public class ItemVariable extends Item {
         super(properties);
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
     public void appendHoverText(ItemStack itemStack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         IVariableFacade variableFacade = getVariableFacade(ValueDeseralizationContext.ofClient(), itemStack);
