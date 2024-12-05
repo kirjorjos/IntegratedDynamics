@@ -5,30 +5,16 @@ import com.google.common.cache.CacheBuilder;
 import com.mojang.serialization.MapCodec;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
@@ -45,28 +31,13 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.EntityCollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
-import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
+import net.minecraft.world.phys.shapes.*;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
 import net.neoforged.neoforge.common.extensions.ILevelExtension;
 import org.cyclops.cyclopscore.block.BlockWithEntity;
-import org.cyclops.cyclopscore.client.model.IDynamicModelElement;
 import org.cyclops.cyclopscore.datastructure.EnumFacingMap;
 import org.cyclops.cyclopscore.helper.BlockEntityHelpers;
-import org.cyclops.cyclopscore.helper.MinecraftHelpers;
-import org.cyclops.cyclopscore.helper.RenderHelpers;
 import org.cyclops.integrateddynamics.Capabilities;
-import org.cyclops.integrateddynamics.IntegratedDynamics;
-import org.cyclops.integrateddynamics.Reference;
 import org.cyclops.integrateddynamics.RegistryEntries;
 import org.cyclops.integrateddynamics.api.block.IDynamicLight;
 import org.cyclops.integrateddynamics.api.block.IDynamicRedstone;
@@ -75,11 +46,7 @@ import org.cyclops.integrateddynamics.api.part.IPartContainer;
 import org.cyclops.integrateddynamics.api.part.IPartState;
 import org.cyclops.integrateddynamics.api.part.IPartType;
 import org.cyclops.integrateddynamics.api.part.PartRenderPosition;
-import org.cyclops.integrateddynamics.block.shapes.CollisionContextBlockSupport;
-import org.cyclops.integrateddynamics.block.shapes.VoxelShapeComponentsFactoryHandlerCableCenter;
-import org.cyclops.integrateddynamics.block.shapes.VoxelShapeComponentsFactoryHandlerCableConnections;
-import org.cyclops.integrateddynamics.block.shapes.VoxelShapeComponentsFactoryHandlerFacade;
-import org.cyclops.integrateddynamics.block.shapes.VoxelShapeComponentsFactoryHandlerParts;
+import org.cyclops.integrateddynamics.block.shapes.*;
 import org.cyclops.integrateddynamics.client.model.CableModel;
 import org.cyclops.integrateddynamics.client.model.IRenderState;
 import org.cyclops.integrateddynamics.core.block.BlockRayTraceResultComponent;
@@ -96,14 +63,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * A block that is built up from different parts.
  * This block refers to a ticking part entity.
  * @author rubensworks
  */
-public class BlockCable extends BlockWithEntity implements IDynamicModelElement, SimpleWaterloggedBlock {
+public class BlockCable extends BlockWithEntity implements SimpleWaterloggedBlock {
 
     public static final MapCodec<BlockCable> CODEC = simpleCodec(BlockCable::new);
 
@@ -144,29 +110,17 @@ public class BlockCable extends BlockWithEntity implements IDynamicModelElement,
             new VoxelShapeComponentsFactoryHandlerFacade()
     );
 
-    @OnlyIn(Dist.CLIENT)
-    public TextureAtlasSprite texture;
     @Setter
     private boolean disableCollisionBox = false;
 
     public BlockCable(Properties properties) {
         super(properties, BlockEntityMultipartTicking::new);
         this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, false));
-        if (MinecraftHelpers.isClientSide()) {
-            IntegratedDynamics._instance.getModEventBus().addListener(this::postTextureStitch);
-        }
     }
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public void postTextureStitch(TextureAtlasStitchedEvent event) {
-        if (event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
-            texture = event.getAtlas().getSprite(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "block/cable"));
-        }
     }
 
     @Override
@@ -412,24 +366,6 @@ public class BlockCable extends BlockWithEntity implements IDynamicModelElement,
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void initializeClient(Consumer<IClientBlockExtensions> consumer) {
-        consumer.accept(new IClientBlockExtensions() {
-            @Override
-            public boolean addHitEffects(BlockState blockState, Level world, HitResult target, ParticleEngine particleManager) {
-                BlockPos blockPos = ((BlockHitResult) target).getBlockPos();
-                if(CableHelpers.hasFacade(world, blockPos)) {
-                    CableHelpers.getFacade(world, blockPos)
-                            .ifPresent(facadeState -> RenderHelpers.addBlockHitEffects(particleManager, (ClientLevel) world, facadeState, blockPos, ((BlockHitResult) target).getDirection()));
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-    }
-
-    @Override
     public boolean shouldDisplayFluidOverlay(BlockState state, BlockAndTintGetter world, BlockPos pos, FluidState fluidState) {
         return world instanceof ILevelExtension levelExtension && CableHelpers.getFacade(levelExtension, pos).isPresent();
     }
@@ -494,36 +430,6 @@ public class BlockCable extends BlockWithEntity implements IDynamicModelElement,
             }
         }
         return light;
-    }
-
-    /* --------------- Start Dynamic model --------------- */
-
-    @Override
-    public boolean hasDynamicModel() {
-        return true;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public BakedModel createDynamicModel(ModelEvent.ModifyBakingResult event) {
-        CableModel model = new CableModel();
-        ResourceLocation registryName = BuiltInRegistries.BLOCK.getKey(this);
-        event.getModels().put(new ModelResourceLocation(registryName, "waterlogged=false"), model);
-        event.getModels().put(new ModelResourceLocation(registryName, "waterlogged=true"), model);
-        event.getModels().put(new ModelResourceLocation(registryName, "inventory"), model);
-        return model;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public static class BlockColor implements net.minecraft.client.color.block.BlockColor {
-        @Override
-        public int getColor(BlockState blockState, @Nullable BlockAndTintGetter world, @Nullable BlockPos blockPos, int color) {
-            // Only modify color if we have a facade
-            return blockPos == null || (!(world instanceof ILevelExtension levelExtension)) ?
-                -1 : CableHelpers.getFacade(levelExtension, blockPos)
-                    .map(facadeState -> Minecraft.getInstance().getBlockColors().getColor(facadeState, world, blockPos, color))
-                    .orElse(-1);
-        }
     }
 
 }

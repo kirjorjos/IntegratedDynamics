@@ -7,13 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import com.mojang.math.Transformation;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockElementFace;
-import net.minecraft.client.renderer.block.model.BlockElementRotation;
-import net.minecraft.client.renderer.block.model.BlockFaceUV;
-import net.minecraft.client.renderer.block.model.FaceBakery;
-import net.minecraft.client.renderer.block.model.ItemTransform;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.BlockModelRotation;
@@ -38,8 +32,8 @@ import org.cyclops.cyclopscore.helper.BlockEntityHelpers;
 import org.cyclops.cyclopscore.helper.ModelHelpers;
 import org.cyclops.cyclopscore.helper.RenderHelpers;
 import org.cyclops.integrateddynamics.GeneralConfig;
-import org.cyclops.integrateddynamics.RegistryEntries;
 import org.cyclops.integrateddynamics.api.part.PartRenderPosition;
+import org.cyclops.integrateddynamics.block.BlockCableClientConfig;
 import org.cyclops.integrateddynamics.core.blockentity.BlockEntityMultipartTicking;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
@@ -319,7 +313,7 @@ public abstract class CableModelBase extends DelegatingDynamicItemAndBlockModel 
 
     @Override
     public TextureAtlasSprite getParticleIcon() {
-        return RegistryEntries.BLOCK_CABLE.get().texture;
+        return BlockCableClientConfig.BLOCK_TEXTURE;
     }
 
     @Nonnull
