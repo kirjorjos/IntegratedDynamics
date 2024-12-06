@@ -20,7 +20,7 @@ Take full and automated control of your appliances.
 [[dependencies.integrateddynamics]]
     modId="cyclopscore"
     type="required"
-    versionRange="[1.25.1,)"
+    versionRange="[1.25.5,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.integrateddynamics]]
