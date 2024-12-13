@@ -371,7 +371,7 @@ public class GameTestsNetwork {
                     "Connected cables are invalid"
             );
 
-            helper.assertItemEntityNotPresent(RegistryEntries.ITEM_CABLE.get());
+            helper.assertItemEntityPresent(RegistryEntries.ITEM_CABLE.get());
         });
     }
 
