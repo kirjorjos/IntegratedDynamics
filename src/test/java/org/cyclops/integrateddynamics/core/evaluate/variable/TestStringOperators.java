@@ -156,7 +156,7 @@ public class TestStringOperators {
     }
 
     @Test(expected = EvaluationException.class)
-    public void testInvalidInputSizConcatLarge() throws EvaluationException {
+    public void testInvalidInputSizeConcatLarge() throws EvaluationException {
         Operators.STRING_CONCAT.evaluate(new IVariable[]{sabc, sabc, sabc});
     }
 
@@ -780,4 +780,32 @@ public class TestStringOperators {
         Operators.NAMED_NAME.evaluate(new IVariable[]{DUMMY_VARIABLE});
     }
 
+    /**
+     * ----------------------------------- STRING_ERROR -----------------------------------
+     */
+
+    @Test(expected = EvaluationException.class)
+    public void testStringErrorWithSymbols() throws EvaluationException {
+        Operators.STRING_ERROR.evaluate(sregex);
+    }
+
+    @Test(expected = EvaluationException.class)
+    public void testStringErrorWithSpaces() throws EvaluationException {
+        Operators.STRING_ERROR.evaluate(shelloWorld);
+    }
+
+    @Test(expected = EvaluationException.class)
+    public void testInvalidInputSizeLong() throws EvaluationException {
+        Operators.STRING_ERROR.evaluate(new IVariable[]{sabc, sabc});
+    }
+
+    @Test(expected = EvaluationException.class)
+    public void testInvalidInputSizeErrorSmall() throws EvaluationException {
+        Operators.STRING_ERROR.evaluate(new IVariable[]{});
+    }
+
+    @Test(expected = EvaluationException.class)
+    public void testInvalidInputTypeError() throws EvaluationException {
+        Operators.STRING_ERROR.evaluate(new IVariable[]{DUMMY_VARIABLE, DUMMY_VARIABLE});
+    }
 }
