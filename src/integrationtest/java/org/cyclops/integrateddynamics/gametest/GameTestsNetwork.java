@@ -8,7 +8,9 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -372,6 +374,23 @@ public class GameTestsNetwork {
             );
 
             helper.assertItemEntityPresent(RegistryEntries.ITEM_CABLE.get());
+        });
+    }
+
+    @GameTest(template = TEMPLATE_EMPTY)
+    public void testNetworkCableWithLever(GameTestHelper helper) {
+        // Place cable
+        helper.setBlock(POS.offset(1, 0, 1), RegistryEntries.BLOCK_CABLE.value());
+
+        // Attempt to place lever as player
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        ItemStack itemStack = new ItemStack(Items.LEVER);
+        player.setItemInHand(InteractionHand.MAIN_HAND, itemStack);
+        helper.placeAt(player, itemStack, POS.offset(1, 0, 1).south(), Direction.NORTH);
+
+        helper.succeedWhen(() -> {
+            helper.assertValueEqual(player.getItemInHand(InteractionHand.MAIN_HAND).getItem(), Items.LEVER, "Item hand is incorrect");
+            helper.assertBlockNotPresent(Blocks.LEVER, POS.offset(1, 0, 1).north());
         });
     }
 

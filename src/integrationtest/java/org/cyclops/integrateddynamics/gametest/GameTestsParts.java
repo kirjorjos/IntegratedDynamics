@@ -431,4 +431,24 @@ public class GameTestsParts {
         });
     }
 
+    @GameTest(template = TEMPLATE_EMPTY)
+    public void testPartsRedstoneReaderWithLever(GameTestHelper helper) {
+        // Place cable
+        helper.setBlock(POS, RegistryEntries.BLOCK_CABLE.value());
+
+        // Place redstone reader
+        PartHelpers.addPart(helper.getLevel(), helper.absolutePos(POS), Direction.NORTH, PartTypes.REDSTONE_READER, new ItemStack(PartTypes.REDSTONE_READER.getItem()));
+
+        // Attempt to place lever as player
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        ItemStack itemStack = new ItemStack(Items.LEVER);
+        player.setItemInHand(InteractionHand.MAIN_HAND, itemStack);
+        helper.placeAt(player, itemStack, POS.south(), Direction.NORTH);
+
+        helper.succeedWhen(() -> {
+            helper.assertTrue(player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty(), "Item hand is not empty");
+            helper.assertBlockPresent(Blocks.LEVER, POS.north());
+        });
+    }
+
 }
