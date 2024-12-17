@@ -1,0 +1,8 @@
+As always, don't forget to backup your world before updating!
+Requires CyclopsCore version 1.18.4 or higher.
+
+Additions:
+* Add error operator
+
+Changes:
+* Reduce network inits by half when placing cables, Closes #1439
