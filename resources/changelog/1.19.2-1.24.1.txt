@@ -1,0 +1,7 @@
+As always, don't forget to backup your world before updating!
+Requires CyclopsCore version 1.18.2 or higher.
+
+Fixes:
+* Fix cable placement with commands initializing networks
+  This was broken since CyclopsMC/IntegratedTunnels#243
+

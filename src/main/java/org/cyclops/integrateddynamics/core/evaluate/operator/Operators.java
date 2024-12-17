@@ -819,6 +819,17 @@ public final class Operators {
             ).build());
 
     /**
+     * Throw a custom error
+     */
+    public static final IOperator STRING_ERROR  = REGISTRY.register(OperatorBuilders.STRING_2.symbol("error").operatorName("string_error").interactName("stringError")
+            .inputType(ValueTypes.STRING).renderPattern(IConfigRenderPattern.SUFFIX_1_LONG)
+            .function(
+                (variables) -> {
+                    throw new EvaluationException(Component.translatable(variables.getValue(0, ValueTypes.STRING).getRawValue()));
+                }
+            ).build());
+
+    /**
      * ----------------------------------- NUMBER OPERATORS -----------------------------------
      */
 

@@ -1,0 +1,9 @@
+As always, don't forget to backup your world before updating!
+Requires CyclopsCore version 1.18.2 or higher.
+
+Changes:
+* Drop Part Offsets into their original form, Closes #1418
+
+Fixes:
+* Fix creative batteries not providing energy, Closes #1421
+
