@@ -1,0 +1,13 @@
+As always, don't forget to backup your world before updating!
+Requires CyclopsCore version 1.25.5 or higher.
+
+Additions:
+* Add error operator
+* Add nl_nl translations
+
+Changes:
+* Reduce network inits by half when placing cables, Closes #1439
+
+Fixes:
+* Fix Jade integration not working, Closes #1438
+
