@@ -8,6 +8,7 @@ import org.cyclops.integrateddynamics.IntegratedDynamics;
 import org.cyclops.integrateddynamics.RegistryEntries;
 import org.cyclops.integrateddynamics.api.evaluate.operator.IOperator;
 import org.cyclops.integrateddynamics.api.evaluate.variable.IValue;
+import org.cyclops.integrateddynamics.api.evaluate.variable.IValueType;
 import org.cyclops.integrateddynamics.api.evaluate.variable.ValueDeseralizationContext;
 import org.cyclops.integrateddynamics.api.item.IAspectVariableFacade;
 import org.cyclops.integrateddynamics.api.item.IVariableFacade;
@@ -20,10 +21,11 @@ import org.cyclops.integrateddynamics.api.part.aspect.IAspectWrite;
 import org.cyclops.integrateddynamics.api.part.write.IPartStateWriter;
 import org.cyclops.integrateddynamics.api.part.write.IPartTypeWriter;
 import org.cyclops.integrateddynamics.core.evaluate.operator.Operators;
-import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeInteger;
+import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypes;
 import org.cyclops.integrateddynamics.core.helper.PartHelpers;
 import org.cyclops.integrateddynamics.core.item.AspectVariableFacade;
 import org.cyclops.integrateddynamics.core.logicprogrammer.OperatorLPElement;
+import org.cyclops.integrateddynamics.core.logicprogrammer.ValueTypeLPElementBase;
 import org.cyclops.integrateddynamics.part.PartTypePanelDisplay;
 import org.cyclops.integrateddynamics.part.aspect.Aspects;
 
@@ -38,6 +40,13 @@ public class GameTestHelpersIntegratedDynamics {
         if (!Objects.equals(value1, value2)) {
             throw new GameTestAssertException("Value is incorrect");
         }
+    }
+
+    public static ItemStack createVariableForValue(Level level, IValueType valueType, IValue value) {
+        IVariableFacadeHandlerRegistry registry = IntegratedDynamics._instance.getRegistryManager().getRegistry(IVariableFacadeHandlerRegistry.class);
+        ItemStack itemStack = new ItemStack(RegistryEntries.ITEM_VARIABLE);
+        return registry.writeVariableFacadeItem(true, itemStack, ValueTypes.REGISTRY,
+                new ValueTypeLPElementBase.ValueTypeVariableFacadeFactory(valueType, value), level, null, RegistryEntries.BLOCK_LOGIC_PROGRAMMER.get().defaultBlockState());
     }
 
     public static ItemStack createVariableForOperator(Level level, IOperator operator, int[] variableIds) {
@@ -71,7 +80,7 @@ public class GameTestHelpersIntegratedDynamics {
         }, level, null, null);
     }
 
-    public static void placeVariableInWriter(Level level, PartPos partPos, final IAspectWrite<ValueTypeInteger.ValueInteger, ValueTypeInteger> aspect, ItemStack variableAspect) {
+    public static void placeVariableInWriter(Level level, PartPos partPos, final IAspectWrite<?, ?> aspect, ItemStack variableAspect) {
         PartHelpers.PartStateHolder<?, ?> partStateHolder = PartHelpers.getPart(partPos);
         IPartTypeWriter<?, ?> part = (IPartTypeWriter<?, ?>) partStateHolder.getPart();
         IPartStateWriter<?> state = (IPartStateWriter<?>) partStateHolder.getState();
