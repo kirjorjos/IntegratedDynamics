@@ -91,6 +91,7 @@ org.cyclops.integrateddynamics.core.recipe.type
 org.cyclops.integrateddynamics.core.test
 org.cyclops.integrateddynamics.entity.item
 org.cyclops.integrateddynamics.fluid
+org.cyclops.integrateddynamics.gametest
 org.cyclops.integrateddynamics.infobook
 org.cyclops.integrateddynamics.infobook.pageelement
 org.cyclops.integrateddynamics.inventory.container
