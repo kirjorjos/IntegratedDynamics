@@ -32,7 +32,6 @@ import org.cyclops.integrateddynamics.Capabilities;
 import org.cyclops.integrateddynamics.RegistryEntries;
 import org.cyclops.integrateddynamics.block.BlockSqueezer;
 import org.cyclops.integrateddynamics.core.recipe.handler.RecipeHandlerSqueezer;
-import org.cyclops.integrateddynamics.core.recipe.type.FacadeSqueezeCalculator;
 import org.cyclops.integrateddynamics.core.recipe.type.RecipeSqueezer;
 
 import java.util.Arrays;
@@ -161,17 +160,12 @@ public class BlockEntitySqueezer extends CyclopsBlockEntity {
                 if (blockEntity.itemHeight == 7) {
                     Optional<RecipeSqueezer> recipeOptional = blockEntity.getCurrentRecipe();
                     if (recipeOptional.isPresent()) {
-                        boolean isFacadeRecipe = false;
                         RecipeSqueezer recipe = recipeOptional.get();
                         ItemStack oldItem = blockEntity.getInventory().getItem(0);
                         blockEntity.getInventory().setItem(0, ItemStack.EMPTY);
-                        for (RecipeSqueezer.IngredientChance itemStackChance : recipe.getOutputItems()) {
+                        for (RecipeSqueezer.IngredientChance itemStackChance : recipe.assemble(oldItem)) {
                             if (itemStackChance.getChance() == 1.0F || itemStackChance.getChance() >= level.random.nextFloat()) {
                                 ItemStack resultStack = itemStackChance.getIngredientFirst().copy();
-                              //Facade clearing special case
-                                if (isFacadeRecipe) resultStack = FacadeSqueezeCalculator.getOutputItems(oldItem);
-
-                                if (resultStack.is(RegistryEntries.ITEM_FACADE.asItem())) isFacadeRecipe = true;
 
                                 for (Direction side : Direction.values()) {
                                     if (!resultStack.isEmpty() && side != Direction.UP) {
