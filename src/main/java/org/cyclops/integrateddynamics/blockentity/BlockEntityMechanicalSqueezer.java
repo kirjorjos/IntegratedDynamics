@@ -142,7 +142,6 @@ public class BlockEntityMechanicalSqueezer extends BlockEntityMechanicalMachine<
     protected boolean finalizeRecipe(RecipeMechanicalSqueezer recipe, boolean simulate) {
         // Output items
         NonNullList<ItemStack> outputStacks = NonNullList.create();
-        boolean isFacadeRecipe = false;
 
         for (RecipeSqueezer.IngredientChance itemStackChance : recipe.assemble(getInventory().getItem(SLOT_INPUT))) {
             ItemStack outputStack = itemStackChance.getIngredientFirst().copy();
