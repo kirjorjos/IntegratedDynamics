@@ -31,7 +31,6 @@ import org.cyclops.integrateddynamics.RegistryEntries;
 import org.cyclops.integrateddynamics.block.BlockMechanicalSqueezer;
 import org.cyclops.integrateddynamics.block.BlockMechanicalSqueezerConfig;
 import org.cyclops.integrateddynamics.core.blockentity.BlockEntityMechanicalMachine;
-import org.cyclops.integrateddynamics.core.recipe.type.FacadeSqueezeCalculator;
 import org.cyclops.integrateddynamics.core.recipe.handler.RecipeHandlerSqueezer;
 import org.cyclops.integrateddynamics.core.recipe.type.RecipeMechanicalSqueezer;
 import org.cyclops.integrateddynamics.core.recipe.type.RecipeSqueezer;
@@ -145,23 +144,15 @@ public class BlockEntityMechanicalSqueezer extends BlockEntityMechanicalMachine<
         NonNullList<ItemStack> outputStacks = NonNullList.create();
         boolean isFacadeRecipe = false;
 
-        for (RecipeSqueezer.IngredientChance itemStackChance : recipe.getOutputItems()) {
+        for (RecipeSqueezer.IngredientChance itemStackChance : recipe.assemble(getInventory().getItem(SLOT_INPUT))) {
             ItemStack outputStack = itemStackChance.getIngredientFirst().copy();
             if (!outputStack.isEmpty() && (simulate || itemStackChance.getChance() == 1.0F
                     || itemStackChance.getChance() >= getLevel().random.nextFloat())) {
-                if (isFacadeRecipe) outputStack = FacadeSqueezeCalculator.getOutputItems(getCurrentRecipeCacheKey());
-
-                if (getCurrentRecipeCacheKey().is(RegistryEntries.ITEM_FACADE.asItem())) isFacadeRecipe = true;
                 InventoryHelpers.addStackToList(outputStacks, outputStack);
             }
         }
         if (!InventoryHelpers.addToInventory(getInventory(), SLOTS_OUTPUT, outputStacks, simulate).isEmpty()) {
             return false;
-        }
-
-        //Facade clearing special case
-        if (outputStacks.get(0).getItem().toString().equals("integrateddynamics.facade")) {
-            outputStacks.set(1, FacadeSqueezeCalculator.getOutputItems(getInventory().getItem(SLOT_INPUT)));
         }
 
         // Output fluid
