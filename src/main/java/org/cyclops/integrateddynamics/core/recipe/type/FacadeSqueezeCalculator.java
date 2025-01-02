@@ -18,7 +18,6 @@ public class FacadeSqueezeCalculator {
     public static NonNullList<IngredientChance> getOutputItems(ItemStack inputItem) {
         ItemStack facadeItemStack = new ItemStack(RegistryEntries.ITEM_FACADE);
 
-        facadeItemStack.setTag(null);
         Either<ItemStack, ItemStackFromIngredient> facadeEither = Either.left(facadeItemStack);
         IngredientChance facade = new IngredientChance(facadeEither, 1.0F);
 
