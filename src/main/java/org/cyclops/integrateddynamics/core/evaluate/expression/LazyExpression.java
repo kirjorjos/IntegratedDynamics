@@ -22,7 +22,7 @@ public class LazyExpression<V extends IValue> extends VariableAdapter<V> impleme
     private final IOperator op;
     private final IVariable[] input;
     private final ILazyExpressionValueCache valueCache;
-    private boolean errored = false;
+    private Boolean errored = false;
 
     public LazyExpression(int id, IOperator op, IVariable[] input, ILazyExpressionValueCache valueCache) {
         this.id = id;
@@ -65,6 +65,7 @@ public class LazyExpression<V extends IValue> extends VariableAdapter<V> impleme
             value = evaluate();
         } catch (EvaluationException e) {
             errored = true;
+            e.addResolutionListeners(() -> errored = false);
             throw e;
         }
         try {

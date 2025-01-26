@@ -823,11 +823,29 @@ public final class Operators {
     /**
      * Throw a custom error
      */
-    public static final IOperator STRING_ERROR  = REGISTRY.register(OperatorBuilders.STRING_2.symbol("error").operatorName("string_error").interactName("stringError")
+    public static final IOperator STRING_ERROR  = REGISTRY.register(OperatorBuilders.STRING_2.symbol("error").operatorName("string_error").interactName("stringError").output(ValueTypes.CATEGORY_ANY)
             .inputType(ValueTypes.STRING).renderPattern(IConfigRenderPattern.SUFFIX_1_LONG)
             .function(
                 (variables) -> {
                     throw new EvaluationException(Component.translatable(variables.getValue(0, ValueTypes.STRING).getRawValue()));
+                }
+            ).build());
+
+    /**
+     * Catch an error
+     */
+    public static final IOperator STRING_CATCH  = REGISTRY.register(OperatorBuilders.STRING_2.symbol("catch").operatorName("string_catch").interactName("stringCatch")
+            .inputTypes(ValueTypes.STRING, ValueTypes.CATEGORY_ANY).renderPattern(IConfigRenderPattern.PREFIX_2_LONG).output(ValueTypes.STRING)
+            .function(
+                (variables) -> {
+                    ValueTypeString.ValueString result = variables.getValue(0, ValueTypes.STRING);
+                    try {
+                        variables.getValue(1);
+                    } catch(EvaluationException e) {
+                        e.resolve();
+                        result = ValueTypeString.ValueString.of(e.getErrorMessage().getString());
+                    }
+                    return result;
                 }
             ).build());
 

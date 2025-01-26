@@ -16,6 +16,7 @@ plugins {
     id 'com.diffplug.spotless' version '5.14.3'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 	id 'com.modrinth.minotaur' version '2.+'
+	id 'eclipse'
 }
 
 apply plugin: 'net.minecraftforge.gradle'
