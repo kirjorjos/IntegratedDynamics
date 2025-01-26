@@ -14,6 +14,7 @@ import org.cyclops.integrateddynamics.core.helper.L10NValues;
 /**
  * A generic expression with arbitrarily nested binary operations.
  * This is evaluated in a lazy manner.
+ *
  * @author rubensworks
  */
 public class LazyExpression<V extends IValue> extends VariableAdapter<V> implements IExpression<V> {
@@ -37,12 +38,16 @@ public class LazyExpression<V extends IValue> extends VariableAdapter<V> impleme
 
     @Override
     public IValue evaluate() throws EvaluationException {
-        if(valueCache.hasValue(id)) {
+        if (valueCache.hasValue(id)) {
             return valueCache.getValue(id);
         }
-        IValue value = op.evaluate(input);
-        for (IVariable inputVariable : input) {
-            inputVariable.addInvalidationListener(this);
+        IValue value;
+        try {
+            value = op.evaluate(input);
+        } finally {
+            for (IVariable inputVariable : input) {
+                inputVariable.addInvalidationListener(this);
+            }
         }
         valueCache.setValue(id, value);
         return value;
