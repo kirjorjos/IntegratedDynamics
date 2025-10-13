@@ -20,10 +20,32 @@ plugins {
     id 'com.github.kt3k.coveralls' version '2.8.2'
 }
 
+repositories {
+    maven {
+        // Legacy Minecraft mirrors for missing libraries/resources
+        name = "LegacyMC"
+        url = "https://libraries.minecraft.net/"
+    }
+    maven {
+        name = "Forge"
+        url = "https://maven.minecraftforge.net/"
+    }
+    maven {
+        name = "ModMaven"
+        url = "https://modmaven.dev/"
+    }
+    maven {
+        name = "CyclopsMC"
+        url = "https://maven.cyclopsmc.com/"
+    }
+    mavenCentral()
+}
+
 // For those who want the bleeding edge
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'jacoco'
+apply plugin: 'maven-publish'
 
 loadProperties()
 
@@ -75,5 +97,26 @@ jacocoTestReport {
     reports {
         xml.enabled = true
         html.enabled = true
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'org.cyclops.integrateddynamics'
+            artifactId = 'IntegratedDynamics'
+            version = "${config.minecraft_version}-${config.mod_version}-DEV"
+
+            from components.java
+
+            artifact(file("$buildDir/libs/${archivesBaseName}-${version}-deobf.jar")) {
+                classifier = 'deobf'
+                builtBy tasks.findByName('jar')
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
     }
 }
